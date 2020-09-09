@@ -111,4 +111,40 @@ defmodule Extatistics.Base do
         |> variance()
         |> :math.sqrt()
     end
+
+    def corr(array_a, array_b) do
+        #Correlação de Pearson
+        mean_a = mean(array_a)
+        mean_b = mean(array_b)
+
+        diff_a = Enum.map(array_a, &(deviation(&1, mean_a)))
+        diff_b = Enum.map(array_b, &(deviation(&1, mean_b)))
+
+        sum = diff_a
+              |> Enum.zip(diff_b)
+              |> Enum.map(fn {a, b} -> calculate_weight(a, b) end)
+              |> Enum.sum()
+
+        sqrt_a = array_a
+                 |> Enum.map(&(square_deviation(&1, mean_a)))
+                 |> Enum.sum()
+                 |> :math.sqrt()
+
+        sqrt_b = array_b
+                 |> Enum.map(&(square_deviation(&1, mean_b)))
+                 |> Enum.sum()
+                 |> :math.sqrt()
+        
+        sum / (sqrt_a * sqrt_b)
+    end
+
+    def std_error(array) do
+        # Erro padrão
+        s = stdev(array)
+        n = array
+            |> Enum.count()
+            |> :math.sqrt()
+        
+        s / n
+    end
 end
