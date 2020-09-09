@@ -3,6 +3,28 @@ defmodule Extatistics.Base do
     * Module to implement basic estatistics functions
     """
 
+    @type twoNumTL() :: [{number, number}]
+    @type numEnum() :: Enumerate.number()
+
+    @doc """
+    Apara o array em N posições, retirando:
+     - N/2 no início e N/2 no final, caso N par
+     - N/2 + 1 no início e N/2 no final, caso N ímpar
+    
+    ## Parâmetros
+
+        - array: um enumerável
+        - n: a quantidade de dados a serem aparados
+
+    ## Exemplos
+
+        iex > array = [10, 54, 12.71, "Sean", 0, [4.2,10]]
+        iex > Extatistics.Base.trim(array, 4)
+        [ 12.71, "Sean" ]
+
+        iex> Extatistics.Base.trim(array, 3)
+        [ 12.71, "Sean", 0 ]
+    """
     defp trim(array, n) when rem(n, 2) == 0 do
         x = div(n, 2)
         
@@ -10,6 +32,7 @@ defmodule Extatistics.Base do
         |> Enum.drop(x)
         |> Enum.drop(-x)
     end
+
     defp trim(array, n) when rem(n, 2) == 1 do
         lower = div(n, 2) + 1
         upper = div(n, 2)
@@ -35,18 +58,60 @@ defmodule Extatistics.Base do
         |> :math.pow(2)
     end
 
-    # Média
+    @doc """
+    Calcula a média aritmética dos dados de um enumerável.
+
+    ## Parâmetros
+    
+    - array: um enumerável de números
+    
+    ## Exemplos
+
+        iex> Extatistics.Base.mean([2,7,25,1,12.3,0.7])
+        8.0
+    """
+    @spec mean(numEnum()) :: number()
     def mean(array),
         do: Enum.sum(array)/Enum.count(array)
+
+    @doc """
+    Calcula a média ponderada dos dados de um enumerável.
+
+    Ordena os dados, apara-os e calcula a média com os dados restantes.
+
+    ## Parâmetros
+    
+    - array: um enumerável de números
+    - n: a quantidade de dados a serem aparados
+    
+    ## Exemplos
+
+        iex> Extatistics.Base.mean([2,7,25,1,12.3,0.7], 2)
+        5.575
+
+    """
+    @spec mean(numEnum(), number()) :: number()
     def mean(array, n) do
-        # Média aparada
         array
         |> Enum.sort()
         |> trim(n)
         |> mean()
     end
 
-    # Média Ponderada
+    @doc """
+    Calcula a média ponderada dos dados de um lista de tuplas.
+
+    ## Parâmetros
+    
+    - array: uma lista de tuplas de números com o par (valor, peso)
+    
+    ## Exemplos
+
+        iex> Extatistics.Base.weighted_mean([{1.5, 2}, {2, 0}, {5.84, 1}])
+        2.9466666666666668
+        
+    """
+    @spec weighted_mean(twoNumTL()) :: number() 
     def weighted_mean(array) do
         sum = array
               |> Enum.map(fn {v, w} -> calculate_weight(v, w) end)
@@ -58,11 +123,28 @@ defmodule Extatistics.Base do
         
         sum / sum_weights
     end
+
+    @doc """
+    Calcula a média ponderada dos dados de um array valor e um array peso.
+
+    ## Parâmetros
+    
+    - values: um enumerável de valores
+    - weight: um enumerável de pesos
+    
+    ## Exemplos
+
+        iex> Extatistics.Base.weighted_mean([1.5, 2, 5.84],[2,0,1])
+        2.9466666666666668
+
+    """
+    @spec weighted_mean(numEnum(), numEnum()) :: number()
     def weighted_mean(values, weights) do
         values
         |> Enum.zip(weights)
         |> weighted_mean()
     end
+
 
     def median(array) do
         #Mediana
