@@ -117,6 +117,8 @@ defmodule Extatistics.Base do
     @doc """
     Calcula a média aritmética dos dados de um enumerável.
 
+    Realiza a divisão flutuante do somatório com a contagem total de todos os dados.
+
     ## Parâmetros
     
     - array: um enumerável de números
@@ -157,6 +159,10 @@ defmodule Extatistics.Base do
     @doc """
     Calcula a média ponderada dos dados de um lista de tuplas.
 
+    Os dados são apresentados em uma lista de tuplas de 2 elementos, representando um par
+    {valor, peso}. Cada valor é influenciado por seu respectivo peso. O resultado é a divisão 
+    flutuante do somatório dos valores atualizados com os pesos, pelo somatório dos pesos.
+
     ## Parâmetros
     
     - array: uma lista de tuplas de números com o par {valor, peso}
@@ -183,6 +189,10 @@ defmodule Extatistics.Base do
     @doc """
     Calcula a média ponderada dos dados de um array valor e um array peso.
 
+    Os valores e seus respectivos pesos são analisados de acordo com o índice dos arrays
+    (o valor do índice zero do vetor de valores está relacionado ao peso do indíce zero do 
+    vetor de pesos). Os cálculos realizados são o mesmo de `weighted_mean/1`.
+
     ## Parâmetros
     
     - values: um enumerável de valores
@@ -204,14 +214,23 @@ defmodule Extatistics.Base do
     @doc """
     Calcula a mediana de um enumerável.
 
+    A mediana é calculada através da ordenação dos dados e da seleção do
+    elemento central do enumerável resultante. Quando a contagem de elementos
+    do enumerável for par, a mediana é o cálculo da média aritmética entre os
+    2 elementos centrais (não há um único elemento central, por causa da divisão 
+    exata dos elementos em 2 grupos).
+
     ## Parâmetros
     
     - array: um enumerável de números
     
     ## Exemplos
 
-        iex> Extatistics.Base.median([4,2,10,-6,1,1.7])
+        iex> Extatistics.Base.median([4,2,10,-6,1,1.7]) # Contagem de elementos par
         1.85
+
+        iex> Extatistics.Base.median([2,10,-6,1,1.7]) # Contagem de elementos ímpar
+        1.7
 
     """
     @spec median(numEnum()) :: number()
@@ -276,12 +295,12 @@ defmodule Extatistics.Base do
     
     ## Exemplos
 
-        iex> Extatistics.Base.abs_stdev([4,2,10,-6,1,1.7])
+        iex> Extatistics.Base.mean_dev([4,2,10,-6,1,1.7])
         3.255555555555556
 
     """
-    @spec abs_stdev(numEnum()) :: number()
-    def abs_stdev(array) do
+    @spec mean_dev(numEnum()) :: number()
+    def mean_dev(array) do
         m = mean(array)
 
         array

@@ -7,7 +7,11 @@ defmodule Extatistics.MixProject do
       version: "0.1.0",
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      docs: [
+        assets: "dist/assets",
+        before_closing_head_tag: &docs_before_closing_head_tag/1
+      ]
     ]
   end
 
@@ -27,4 +31,10 @@ defmodule Extatistics.MixProject do
       {:ex_doc,"~>0.22.0", only: :dev}
     ]
   end
+
+  defp docs_before_closing_head_tag(:html) do
+    ~S{<link rel="stylesheet" href="dist/assets/doc.css">}
+  end
+
+  defp docs_before_closing_head_tag(_), do: ""
 end
